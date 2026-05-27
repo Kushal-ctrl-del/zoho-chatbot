@@ -20,11 +20,11 @@ export default function Home() {
     setLoading(true);
 
     try {
-      const res = await fetch("const res = await fetch("https://zoho-chatbot-1.onrender.com/chat", {", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: input, user_id: "default_user" })
-      });
+  const res = await fetch("https://zoho-chatbot-1.onrender.com/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: input, user_id: "default_user" })
+  });
       const contentType = res.headers.get("content-type") || "";
       const payload = contentType.includes("application/json")
         ? await res.json()
