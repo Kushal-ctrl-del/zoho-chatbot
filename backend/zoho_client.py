@@ -20,9 +20,22 @@ class ZohoClient:
             if not res.content:
                 return {}
             try:
-                return res.json()
+                payload = res.json()
             except ValueError:
                 return {}
+
+            if isinstance(payload, dict):
+                error = payload.get("error")
+                if isinstance(error, dict):
+                    error_code = error.get("code")
+                    error_message = str(error.get("message", "")).lower()
+                    if error_code == 6401 or "invalid oauth access token" in error_message:
+                        raise HTTPException(
+                            status_code=401,
+                            detail="Zoho access token expired or invalid. Please login again."
+                        )
+
+            return payload
 
     async def get(self, endpoint: str):
         return await self._request_json("GET", endpoint)

@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from contextlib import asynccontextmanager
 
-from auth import router as auth_router
+from auth import router as auth_router, refresh_access_token
 from agents.router import route
 from memory.store import init_db, get_tokens, get_memory, save_memory
 from zoho_client import ZohoClient
@@ -46,7 +46,16 @@ async def chat(req: ChatRequest):
         client = ZohoClient(tokens["access_token"])
         memory = await get_memory(req.user_id)
 
-        response, updated_memory = await route(req.message, client, memory)
+        try:
+            response, updated_memory = await route(req.message, client, memory)
+        except HTTPException as exc:
+            # If Zoho said token is invalid, try refreshing once then retry
+            if exc.status_code == 401:
+                new_token = await refresh_access_token(req.user_id)
+                client = ZohoClient(new_token)
+                response, updated_memory = await route(req.message, client, memory)
+            else:
+                raise
 
         await save_memory(req.user_id, updated_memory)
 
