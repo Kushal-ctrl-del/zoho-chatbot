@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+httpx
+python-dotenv
+langgraph
+langchain-openai
+pydantic
+sqlalchemy
+aiosqlite
+python-jose
