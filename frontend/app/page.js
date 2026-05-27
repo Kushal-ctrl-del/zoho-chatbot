@@ -20,23 +20,15 @@ export default function Home() {
     setLoading(true);
 
     try {
-  const res = await fetch("https://zoho-chatbot-1.onrender.com/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message: input, user_id: "default_user" })
-  });
-      const contentType = res.headers.get("content-type") || "";
-      const payload = contentType.includes("application/json")
-        ? await res.json()
-        : { detail: await res.text() };
-
-      if (!res.ok) {
-        throw new Error(payload.detail || `Request failed with status ${res.status}`);
-      }
-
-      setMessages(prev => [...prev, { role: "bot", content: payload.response || "No response returned." }]);
-    } catch (error) {
-      setMessages(prev => [...prev, { role: "bot", content: error?.message || "Error connecting to backend." }]);
+      const res = await fetch("https://zoho-chatbot-1.onrender.com/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: input, user_id: "default_user" })
+      });
+      const data = await res.json();
+      setMessages(prev => [...prev, { role: "bot", content: data.response }]);
+    } catch {
+      setMessages(prev => [...prev, { role: "bot", content: "Error connecting to backend." }]);
     }
     setLoading(false);
   };
@@ -44,7 +36,7 @@ export default function Home() {
   if (!authed) return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white">
       <h1 className="text-3xl font-bold mb-4">Zoho Project Assistant</h1>
-      <a href="http://localhost:8000/auth/login"
+      <a href="https://zoho-chatbot-1.onrender.com/auth/login"
         className="bg-blue-600 px-6 py-3 rounded-lg hover:bg-blue-700">
         Login with Zoho
       </a>
