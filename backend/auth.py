@@ -41,7 +41,7 @@ async def callback(request: Request, code: str):
     user_id = "default_user"  # single user for now
     await save_tokens(user_id, tokens["access_token"], tokens.get("refresh_token"))
 
-    return RedirectResponse("http://localhost:3000?auth=success")
+    return RedirectResponse("https://zoho-chatbot-azure.vercel.app?auth=success")
 
 async def refresh_access_token(user_id: str):
     tokens = await get_tokens(user_id)
